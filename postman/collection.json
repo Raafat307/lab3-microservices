@@ -283,7 +283,16 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "http://localhost:8080/manage/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "manage",
+                "health"
+              ]
             }
           },
           "response": []
