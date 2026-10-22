@@ -1,0 +1,49 @@
+{
+	"id": "rsoi-lab2-local",
+	"name": "RSOI Lab2 Local",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "loyaltyUrl",
+			"value": "http://localhost:8050",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "paymentUrl",
+			"value": "http://localhost:8060",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "reservationUrl",
+			"value": "http://localhost:8070",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "username",
+			"value": "Test Max",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "hotelUid",
+			"value": "049161bb-badd-4fa8-9d90-87c9a82b0668",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "reservationUid",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment"
+}
