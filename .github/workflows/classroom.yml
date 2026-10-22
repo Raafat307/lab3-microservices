@@ -53,7 +53,7 @@ jobs:
         run: npm install -g newman
 
       - name: Make scripts executable
-        run: chmod +x scripts/test-script.sh scripts/wait-script.sh
+        run: chmod +x scripts/test-script.sh scripts/wait-script.sh scripts/wait-for.sh
 
       - name: Start all services
         run: docker compose up -d
