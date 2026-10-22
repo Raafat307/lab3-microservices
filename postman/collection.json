@@ -1,0 +1,278 @@
+{
+  "info": {
+    "_postman_id": "f762f215-2630-4588-81e8-ffc56e7bd77a",
+    "name": "RSOI Lab2 - Hotel Booking",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "59008286",
+    "_collection_link": "https://go.postman.co/collection/59008286-f762f215-2630-4588-81e8-ffc56e7bd77a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Gateway Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Gateway is healthy\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/manage/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "manage",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Loyalty Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Loyalty is healthy\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{loyaltyUrl}}/manage/health",
+              "host": [
+                "{{loyaltyUrl}}"
+              ],
+              "path": [
+                "manage",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Payment Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Payment is healthy\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{paymentUrl}}/manage/health",
+              "host": [
+                "{{paymentUrl}}"
+              ],
+              "path": [
+                "manage",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservation Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Reservation is healthy\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{reservationUrl}}/manage/health",
+              "host": [
+                "{{reservationUrl}}"
+              ],
+              "path": [
+                "manage",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Business Logic",
+      "item": [
+        {
+          "name": "Get All Hotels",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Returns a list of hotels\", function () {\r\n    const hotels = pm.response.json();\r\n    pm.expect(hotels).to.be.an(\"array\");\r\n    pm.expect(hotels.length).to.be.greaterThan(0);\r\n});\r\n\r\n// احفظ hotelUid تلقائيًا\r\nif (pm.response.json().length > 0) {\r\n    pm.environment.set(\"hotelUid\", pm.response.json()[0].hotelUid);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/hotels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hotels"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Book Hotel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response contains reservation details\", function () {\r\n    const data = pm.response.json();\r\n    pm.expect(data).to.have.property(\"reservationUid\");\r\n    pm.expect(data).to.have.property(\"hotelUid\");\r\n    pm.expect(data).to.have.property(\"discount\");\r\n    pm.expect(data).to.have.property(\"paymentPrice\");\r\n    pm.expect(data).to.have.property(\"status\");\r\n});\r\n\r\npm.test(\"Payment status is PAID\", function () {\r\n    pm.expect(pm.response.json().status).to.eql(\"PAID\");\r\n});\r\n\r\npm.test(\"Discount is applied correctly\", function () {\r\n    const data = pm.response.json();\r\n    const originalPrice = 10000;\r\n    const expectedPrice = originalPrice - (originalPrice * data.discount / 100);\r\n    pm.expect(data.paymentPrice).to.eql(expectedPrice);\r\n});\r\n\r\n// احفظ reservationUid\r\npm.environment.set(\"reservationUid\", pm.response.json().reservationUid);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"hotelUid\": \"{{hotelUid}}\",\r\n    \"startDate\": \"2027-01-01T00:00:00+00:00\",\r\n    \"endDate\": \"2027-01-05T00:00:00+00:00\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reservations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reservations"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Reservations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Returns list of reservations\", function () {\r\n    const reservations = pm.response.json();\r\n    pm.expect(reservations).to.be.an(\"array\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reservations?username={{username}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reservations"
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "{{username}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Reservation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 204\", function () {\r\n    pm.response.to.have.status(204);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reservations/{{reservationUid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reservations",
+                "{{reservationUid}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

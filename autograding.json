@@ -1,0 +1,64 @@
+{
+  "tests": [
+    {
+      "name": "Gateway health check",
+      "setup": "",
+      "run": "curl -f http://localhost:8080/manage/health",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 5
+    },
+    {
+      "name": "Loyalty health check",
+      "setup": "",
+      "run": "curl -f http://localhost:8050/manage/health",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 5
+    },
+    {
+      "name": "Payment health check",
+      "setup": "",
+      "run": "curl -f http://localhost:8060/manage/health",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 5
+    },
+    {
+      "name": "Reservation health check",
+      "setup": "",
+      "run": "curl -f http://localhost:8070/manage/health",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 5
+    },
+    {
+      "name": "Get hotels list",
+      "setup": "",
+      "run": "curl -f http://localhost:8080/api/v1/hotels",
+      "input": "",
+      "output": "Ararat Park Hyatt Moscow",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 10
+    },
+    {
+      "name": "Book a hotel",
+      "setup": "",
+      "run": "curl -f -X POST http://localhost:8080/api/v1/reservations -H 'Content-Type: application/json' -d '{\"username\":\"Test Max\",\"hotelUid\":\"049161bb-badd-4fa8-9d90-87c9a82b0668\",\"startDate\":\"2027-01-01T00:00:00+00:00\",\"endDate\":\"2027-01-05T00:00:00+00:00\"}'",
+      "input": "",
+      "output": "PAID",
+      "comparison": "included",
+      "timeout": 60,
+      "points": 20
+    }
+  ]
+}

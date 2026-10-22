@@ -1,0 +1,115 @@
+services:
+
+  # ============================================
+  # database
+  # ============================================
+  postgres:
+    image: postgres:13
+    container_name: rsoi-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/scripts:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rsoi-network
+
+  # ============================================
+  # Loyalty Service (8050)
+  # ============================================
+  loyalty:
+    build:
+      context: .
+      dockerfile: loyalty/Dockerfile
+    container_name: rsoi-loyalty
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: program
+      DB_PASSWORD: test
+    ports:
+      - "8050:8050"
+    networks:
+      - rsoi-network
+
+  # ============================================
+  # Payment Service (8060)
+  # ============================================
+  payment:
+    build:
+      context: .
+      dockerfile: payment/Dockerfile
+    container_name: rsoi-payment
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: program
+      DB_PASSWORD: test
+    ports:
+      - "8060:8060"
+    networks:
+      - rsoi-network
+
+  # ============================================
+  # Reservation Service (8070)
+  # ============================================
+  reservation:
+    build:
+      context: .
+      dockerfile: reservation/Dockerfile
+    container_name: rsoi-reservation
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: program
+      DB_PASSWORD: test
+    ports:
+      - "8070:8070"
+    networks:
+      - rsoi-network
+
+  # ============================================
+  # Gateway Service (8080)
+  # ============================================
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    container_name: rsoi-gateway
+    depends_on:
+      - loyalty
+      - payment
+      - reservation
+    environment:
+      LOYALTY_URL: http://loyalty:8050
+      PAYMENT_URL: http://payment:8060
+      RESERVATION_URL: http://reservation:8070
+    ports:
+      - "8080:8080"
+    networks:
+      - rsoi-network
+
+networks:
+  rsoi-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
