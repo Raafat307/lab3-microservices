@@ -21,3 +21,21 @@ management:
   endpoint:
     health:
       show-details: always
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 3               # حجم النافذة (عدد الطلبات التي نحسب عليها)
+        failureRateThreshold: 50           # نسبة الفشل التي تفتح الدائرة (50%)
+        waitDurationInOpenState: 5s        # المدة التي تبقى فيها الدائرة مفتوحة قبل محاولة التحقق
+        permittedNumberOfCallsInHalfOpenState: 2  # عدد الطلبات المسموح بها في حالة Half-Open
+        registerHealthIndicator: true
+    instances:
+      loyaltyService:
+        baseConfig: default
+      paymentService:
+        baseConfig: default
+      reservationService:
+        baseConfig: default

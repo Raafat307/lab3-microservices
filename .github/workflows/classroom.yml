@@ -46,29 +46,16 @@ jobs:
           DB_PASSWORD: test
         run: mvn test
 
-      - name: Start all services
-        run: docker compose up -d
-
-      - name: Wait for services to be ready
-        run: |
-          for port in 8050 8060 8070 8080; do
-            echo "Waiting for port $port..."
-            for i in {1..60}; do
-              if curl -s -o /dev/null -w "%{http_code}" http://localhost:$port/manage/health | grep -q "200"; then
-                echo "Port $port is active"
-                break
-              fi
-              sleep 2
-            done
-          done
-
-
       - name: Install Newman
         run: npm install -g newman
 
-      - name: Run Newman (Postman Integration Tests)
+      - name: Make scripts executable
+        run: chmod +x scripts/test-script.sh scripts/wait-script.sh
+
+      - name: Run Fault Tolerance Tests (Variant 2)
         run: |
-          newman run postman/collection.json -e postman/environment.json --reporters cli
+          # تشغيل السكربت الرسمي للـ variant v2، مع وقف خدمة Loyalty لاختبار العطل
+          scripts/test-script.sh v2 loyalty 8050
 
       - name: Show logs on failure
         if: failure()

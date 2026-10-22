@@ -1,5 +1,6 @@
 package ru.bmstu.rsoi.gateway.client;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ public class LoyaltyClient {
 
     private final WebClient.Builder webClientBuilder;
 
+    @CircuitBreaker(name = "loyaltyService", fallbackMethod = "fallbackGetLoyaltyInfo")
     public LoyaltyInfoResponse getLoyaltyInfo(String username) {
         return webClientBuilder.build()
                 .get()
@@ -25,6 +27,13 @@ public class LoyaltyClient {
                 .block();
     }
 
+    // Fallback: إذا كانت خدمة Loyalty متوقفة، نرجع بيانات افتراضية
+    public LoyaltyInfoResponse fallbackGetLoyaltyInfo(String username, Throwable t) {
+        return new LoyaltyInfoResponse("UNKNOWN", 0, 0);
+    }
+
+    // العمليات التي تغيّر الحالة (Write) لا تحتاج CircuitBreaker هنا،
+    // بل سنعالجها لاحقاً باستخدام Queue و Rollback.
     public LoyaltyInfoResponse increment(String username) {
         LoyaltyRequest req = new LoyaltyRequest(username);
         return webClientBuilder.build()

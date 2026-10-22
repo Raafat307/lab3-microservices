@@ -1,5 +1,6 @@
 package ru.bmstu.rsoi.gateway.client;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.bmstu.rsoi.gateway.dto.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +21,7 @@ public class ReservationClient {
 
     private final WebClient.Builder webClientBuilder;
 
+    @CircuitBreaker(name = "reservationService", fallbackMethod = "fallbackGetAllHotels")
     public List<HotelResponse> getAllHotels() {
         return webClientBuilder.build()
                 .get()
@@ -28,6 +31,11 @@ public class ReservationClient {
                 .block();
     }
 
+    public List<HotelResponse> fallbackGetAllHotels(Throwable t) {
+        return Collections.emptyList();
+    }
+
+    @CircuitBreaker(name = "reservationService", fallbackMethod = "fallbackGetHotel")
     public HotelResponse getHotel(UUID hotelUid) {
         return webClientBuilder.build()
                 .get()
@@ -37,6 +45,11 @@ public class ReservationClient {
                 .block();
     }
 
+    public HotelResponse fallbackGetHotel(UUID hotelUid, Throwable t) {
+        return null; // أو يمكن إرجاع كائن فارغ
+    }
+
+    @CircuitBreaker(name = "reservationService", fallbackMethod = "fallbackGetUserReservations")
     public List<FullReservationResponse> getUserReservations(String username) {
         return webClientBuilder.build()
                 .get()
@@ -46,6 +59,11 @@ public class ReservationClient {
                 .block();
     }
 
+    public List<FullReservationResponse> fallbackGetUserReservations(String username, Throwable t) {
+        return Collections.emptyList();
+    }
+
+    @CircuitBreaker(name = "reservationService", fallbackMethod = "fallbackGetReservation")
     public FullReservationResponse getReservation(UUID reservationUid) {
         return webClientBuilder.build()
                 .get()
@@ -55,6 +73,11 @@ public class ReservationClient {
                 .block();
     }
 
+    public FullReservationResponse fallbackGetReservation(UUID reservationUid, Throwable t) {
+        return null;
+    }
+
+    // العمليات التي تغير الحالة (Write) - لا نطبق عليها CircuitBreaker هنا
     public InternalReservationResponse createReservation(InternalReservationRequest req) {
         return webClientBuilder.build()
                 .post()
