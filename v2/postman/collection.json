@@ -298,6 +298,50 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "step1",
+      "item": [
+        {
+          "name": "Get Me Fallback",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/me?username=Test%20Max",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "Test%20Max"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "step2",
+      "item": []
+    },
+    {
+      "name": "step3",
+      "item": []
+    },
+    {
+      "name": "step4",
+      "item": []
     }
   ]
 }
