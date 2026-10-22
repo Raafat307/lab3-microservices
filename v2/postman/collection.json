@@ -273,6 +273,22 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "success",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
