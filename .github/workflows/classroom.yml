@@ -24,6 +24,9 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
+      - name: Build Docker Images
+        run: docker compose build
+
       - name: Start PostgreSQL
         run: docker compose up -d postgres
 
@@ -52,9 +55,23 @@ jobs:
       - name: Make scripts executable
         run: chmod +x scripts/test-script.sh scripts/wait-script.sh
 
+      - name: Start all services
+        run: docker compose up -d
+
+      - name: Wait for Gateway to be ready
+        run: |
+          for i in {1..60}; do
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/manage/health | grep -q "200"; then
+              echo "Gateway is active"
+              break
+            fi
+            echo "Waiting for Gateway... ($i)"
+            sleep 2
+          done
+
       - name: Run Fault Tolerance Tests (Variant 2)
         run: |
-          # تشغيل السكربت الرسمي للـ variant v2، مع وقف خدمة Loyalty لاختبار العطل
+          # تشغيل السكربت الرسمي للـ variant v2
           scripts/test-script.sh v2 loyalty 8050
 
       - name: Show logs on failure
